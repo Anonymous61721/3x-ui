@@ -18,7 +18,7 @@ function LOGI() {
     echo -e "${green}[INF] $* ${plain}"
 }
 # check root
-[[ $EUID -ne 0 ]] && LOGE "ERROR: You must be root to run this script! \n" && exit 1
+[[ $EUID -ne 0 ]] && LOGE "ERROR ! You Must Grant Administrator Access for this Action to take place \n" && exit 1
 
 # Check OS and set release variable
 if [[ -f /etc/os-release ]]; then
@@ -28,7 +28,7 @@ elif [[ -f /usr/lib/os-release ]]; then
     source /usr/lib/os-release
     release=$ID
 else
-    echo "Failed to check the system OS, please contact the author!" >&2
+    echo "Failed To check the OS Version / Name ! " >&2
     exit 1
 fi
 
@@ -40,21 +40,21 @@ os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 if [[ "${release}" == "centos" ]]; then
     if [[ ${os_version} -lt 8 ]]; then
-        echo -e "${red} Please use CentOS 8 or higher ${plain}\n" && exit 1
+        echo -e "${red} Please Use CentOS 8 Or Higher Versions ! ${plain}\n" && exit 1
     fi
 elif [[ "${release}" ==  "ubuntu" ]]; then
     if [[ ${os_version} -lt 20 ]]; then
-        echo -e "${red}please use Ubuntu 20 or higher version！${plain}\n" && exit 1
+        echo -e "${red}Please Use Ubuntu 20 Or Higher Versions Available ! ${plain}\n" && exit 1
     fi
 
 elif [[ "${release}" == "fedora" ]]; then
     if [[ ${os_version} -lt 36 ]]; then
-        echo -e "${red}please use Fedora 36 or higher version！${plain}\n" && exit 1
+        echo -e "${red}Please Use Fedora 36 or Higher Versions Available ! ${plain}\n" && exit 1
     fi
 
 elif [[ "${release}" == "debian" ]]; then
     if [[ ${os_version} -lt 10 ]]; then
-        echo -e "${red} Please use Debian 10 or higher ${plain}\n" && exit 1
+        echo -e "${red} Please use Debian 10 or higher Versions Available ! ${plain}\n" && exit 1
     fi
 fi
 
@@ -76,7 +76,7 @@ confirm() {
 }
 
 confirm_restart() {
-    confirm "Restart the panel, Attention: Restarting the panel will also restart xray" "y"
+    confirm "${red} Restart The Panel to take effect , NOTE: This action will restart the Xray TOO ! ->  ${plain}" "y"
     if [[ $? == 0 ]]; then
         restart
     else
@@ -85,12 +85,12 @@ confirm_restart() {
 }
 
 before_show_menu() {
-    echo && echo -n -e "${yellow}Press enter to return to the main menu: ${plain}" && read temp
+    echo && echo -n -e "${green}Press Enter to return to menu :  ${plain}" && read temp
     show_menu
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/Anonymotrix/3x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -109,7 +109,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/Anonymotrix/3x-ui/main/install.sh)
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         exit 0
@@ -322,7 +322,7 @@ fi
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/Anonymotrix/3x-ui/raw/main/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script，Please check whether the machine can connect Github"
@@ -621,10 +621,10 @@ ssl_cert_issue_standalone() {
 #method for DNS API mode
 ssl_cert_issue_by_cloudflare() {
     echo -E ""
-    LOGD "******Preconditions******"
-    LOGI "1.need Cloudflare account associated email"
-    LOGI "2.need Cloudflare Global API Key"
-    LOGI "3.your domain use Cloudflare as resolver"
+    LOGD "---- THINGS THAT ARE REQUIRED FOR APPLING FOR A CERTIFICATE ----"
+    LOGI "1.Need a registered Cloudflare Email"
+    LOGI "2.Need Cloudflare Global API Key"
+    LOGI "3.Your domain use Cloudflare as resolver"
     confirm "I have confirmed all these info above[y/n]" "y"
     if [ $? -eq 0 ]; then
         install_acme
@@ -636,9 +636,9 @@ ssl_cert_issue_by_cloudflare() {
         CF_GlobalKey=""
         CF_AccountEmail=""
         
-        LOGD "please input your domain:"
-        read -p "Input your domain here:" CF_Domain
-        LOGD "your domain is:${CF_Domain},check it..."
+        LOGD "Please Input Your Domain For Generating The Certificate"
+        read -p "Input Your Domain In here ! " CF_Domain
+        LOGD "Your Domain is :${CF_Domain},check it..."
         #here we need to judge whether there exists cert already
         local currentCert=$(~/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}')
         if [ ${currentCert} == ${CF_Domain} ]; then
@@ -647,7 +647,7 @@ ssl_cert_issue_by_cloudflare() {
             LOGI "$certInfo"
             exit 1
         else
-            LOGI "your domain is ready for issuing cert now..."
+            LOGI "Your Domain is ready for getting a Certificate !"
         fi
 		
 		#create a directory for install cert
@@ -659,12 +659,12 @@ ssl_cert_issue_by_cloudflare() {
 			mkdir -p "$certPath"
 		fi
 	
-        LOGD "please inout your cloudflare global API key:"
-        read -p "Input your key here:" CF_GlobalKey
-        LOGD "your cloudflare global API key is:${CF_GlobalKey}"
-        LOGD "please input your cloudflare account email:"
-        read -p "Input your email here:" CF_AccountEmail
-        LOGD "your cloudflare account email:${CF_AccountEmail}"
+        LOGD "Please Input Your Cloudflare API KEY :"
+        read -p "KEY : " CF_GlobalKey
+        LOGD "Your CloudFlare Global Key Is : -> ${CF_GlobalKey}"
+        LOGD "Please Input Your CloudFlare Email : "
+        read -p "Input Your Email in Here : " CF_AccountEmail
+        LOGD "Your CloudFlare Email IS :${CF_AccountEmail}"
         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
         if [ $? -ne 0 ]; then
             LOGE "change the default CA to Lets'Encrypt failed,exit"
@@ -746,19 +746,19 @@ run_speedtest() {
 
 show_usage() {
     echo "x-ui control menu usages: "
-    echo "------------------------------------------"
-    echo -e "x-ui              - Enter control menu"
-    echo -e "x-ui start        - Start x-ui "
-    echo -e "x-ui stop         - Stop  x-ui "
-    echo -e "x-ui restart      - Restart x-ui "
-    echo -e "x-ui status       - Show x-ui status"
-    echo -e "x-ui enable       - Enable x-ui on system startup"
-    echo -e "x-ui disable      - Disable x-ui on system startup"
-    echo -e "x-ui log          - Check x-ui logs"
-    echo -e "x-ui update       - Update x-ui "
-    echo -e "x-ui install      - Install x-ui "
-    echo -e "x-ui uninstall    - Uninstall x-ui "
-    echo "------------------------------------------"
+    echo "----------------- MHSenai X Anonymotrix -------------------------"
+    echo -e "x-ui              - Show the control Menu | ( The Adminstrator Menu )"
+    echo -e "x-ui start        - Start X-UI | Xray "
+    echo -e "x-ui stop         - Stop X-UI | Xray "
+    echo -e "x-ui restart      - Restart X-UI | Xray "
+    echo -e "x-ui status       - Show x-ui Current Status "
+    echo -e "x-ui enable       - Enable X-UI , Xray on Syatem Default Startup"
+    echo -e "x-ui disable      - Disable X-UI , Xray on Syatem Default Startup"
+    echo -e "x-ui log          - Check X-UI Logs"
+    echo -e "x-ui update       - Update X-UI to the latest Version Available ! "
+    echo -e "x-ui install      - Install X-UI  "
+    echo -e "x-ui uninstall    - Uninstall X-UI "
+    echo "------------------ MHSenai X Anonymotrix ------------------------"
 }
 
 show_menu() {
@@ -767,32 +767,32 @@ show_menu() {
   ${green}0.${plain} Exit Script
 ————————————————
   ${green}1.${plain} Install x-ui
-  ${green}2.${plain} Update x-ui
-  ${green}3.${plain} Uninstall x-ui
+  ${green}2.${plain} Update X-UI to the latest Version Available !
+  ${green}3.${plain} Uninstall X-UI
 ————————————————
-  ${green}4.${plain} Reset Username And Password
-  ${green}5.${plain} Reset Panel Settings
-  ${green}6.${plain} Change Panel Port
-  ${green}7.${plain} View Current Panel Settings
+  ${green}4.${plain} Reset The Username and Password To ( admin , admin ) 
+  ${green}5.${plain} Reset Panel Current Settings ( This Action may be Dangerous )
+  ${green}6.${plain} Change The Panel Port [ 1 , 65500 ] 
+  ${green}7.${plain} View Current Panel Settings ( PORT , USERNAME , PASSWORD and etc... ) 
 ————————————————
-  ${green}8.${plain} Start x-ui
-  ${green}9.${plain} Stop x-ui
-  ${green}10.${plain} Restart x-ui
-  ${green}11.${plain} Check x-ui Status
-  ${green}12.${plain} Check x-ui Logs
+  ${green}8.${plain} Start X-UI | Xray
+  ${green}9.${plain} Stop X-UI | Xray
+  ${green}10.${plain} Restart X-UI | Xray
+  ${green}11.${plain} Check X-UI current status
+  ${green}12.${plain} Check X-UI Logs
 ————————————————
-  ${green}13.${plain} Enable x-ui On System Startup
-  ${green}14.${plain} Disabel x-ui On System Startup
+  ${green}13.${plain} Enable X-UI , Xray on Syatem Default Startup
+  ${green}14.${plain} Disable X-UI , Xray on Syatem Default Startup
 ————————————————
   ${green}15.${plain} Enable BBR 
-  ${green}16.${plain} Apply for an SSL Certificate
-  ${green}17.${plain} Update Geo Files
-  ${green}18.${plain} Active Firewall and open ports
-  ${green}19.${plain} Fixing Google reCAPTCHA
-  ${green}20.${plain} Speedtest by Ookla
+  ${green}16.${plain} Apply for an SSL Certificate 
+  ${green}17.${plain} Update Geographical Files
+  ${green}18.${plain} Active Firewall and the ports that are open
+  ${green}19.${plain} Fixing Google reCAPTCHA | Disabling It
+  ${green}20.${plain} SPEEDTEST ! ( POWERED BY OKALA ) 
  "
     show_status
-    echo && read -p "Please enter your selection [0-20]: " num
+    echo && read -p "Please Enter Your Desired Selection Between The Ranges Of : [0-20]: " num
 
     case "${num}" in
     0)
